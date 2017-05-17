@@ -455,7 +455,7 @@ resource &quot;aws_elb&quot; &quot;load_balancer&quot; {
 </section>
 <section class="slide level1">
 
-<h3 id="an-introduction-to-docker-image">An Introduction to Docker Image</h3>
+<h4 id="an-introduction-to-docker-image">An Introduction to Docker Image</h4>
 <ul>
 <li>image
 <ul>
@@ -465,7 +465,7 @@ resource &quot;aws_elb&quot; &quot;load_balancer&quot; {
 </section>
 <section class="slide level1">
 
-<h3 id="an-introduction-to-docker-container">An Introduction to Docker Container</h3>
+<h4 id="an-introduction-to-docker-container">An Introduction to Docker Container</h4>
 <ul>
 <li>container
 <ul>
@@ -475,7 +475,7 @@ resource &quot;aws_elb&quot; &quot;load_balancer&quot; {
 </section>
 <section class="slide level1">
 
-<h3 id="an-introduction-to-docker-dockerfile">An Introduction to Docker Dockerfile</h3>
+<h4 id="an-introduction-to-docker-dockerfile">An Introduction to Docker Dockerfile</h4>
 <ul>
 <li>Docker components
 <ul>
@@ -496,6 +496,30 @@ resource &quot;aws_elb&quot; &quot;load_balancer&quot; {
 </section>
 <section class="slide level1">
 
+<h4 id="dockerfile">Dockerfile</h4>
+<pre><code># Use an official Python runtime as a base image
+FROM python:2.7-slim
+
+# Set the working directory to /app
+WORKDIR /app
+
+# Copy the current directory contents into the container at /app
+ADD . /app
+
+# Install any needed packages specified in requirements.txt
+RUN pip install -r requirements.txt
+
+# Make port 80 available to the world outside this container
+EXPOSE 80
+
+# Define environment variable
+ENV NAME World
+
+# Run app.py when the container launches
+CMD [&quot;python&quot;, &quot;app.py&quot;]</code></pre>
+</section>
+<section class="slide level1">
+
 <h3 id="docker-vs-vm">Docker vs VM</h3>
 <figure>
 <img src="Images/VM.PNG" />
@@ -507,16 +531,9 @@ resource &quot;aws_elb&quot; &quot;load_balancer&quot; {
 <figure>
 <img src="Images/Docker.PNG" />
 </figure>
-<h3 id="resources">Resources</h3>
-<ul>
-<li>Presentation available online at <a href="">awscli.mudrii.com</a></li>
-<li>Sources of this presentation is available at <a href="https://github.com/mudrii/awscli.git" class="uri">https://github.com/mudrii/awscli.git</a></li>
-<li>More details on AWS CLI <a href="http://docs.aws.amazon.com/cli/latest/userguide/aws-cli.pdf">Official PDF</a></li>
-<li>AWS (CLI) reference <a href="http://docs.aws.amazon.com/cli/latest/reference/#available-services">AWS Command Line Reference</a></li>
-</ul>
 </section>
-<section id="questions" class="slide level1">
-<h1>Questions ?</h1>
+<section id="demo-questions" class="slide level1">
+<h1>Demo &amp; Questions ?</h1>
 </section>
 <section class="slide level1">
 
