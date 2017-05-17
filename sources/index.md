@@ -1,10 +1,11 @@
-% Infrastructure as Code (IAC)
+% Infrastructure as Code
 % Ion Mudreac
-% 17 May 2017
+% TEDA 17 May 2017
 
 ---
 
-### About me
+#### About me
+
 
 * SCB CDO DevOps Transformation Lead,
 * Economist by training
@@ -12,7 +13,8 @@
 
 ---
 
-### About this Crash Course
+#### Content
+
 
 * The rise of DevOps
 * What is infrastructure as code
@@ -21,429 +23,459 @@
 
 ---
 
-### The rise of DevOps
+#### The rise of DevOps
 
-* The AWS Command Line Interface (CLI) is a unified tool to manage AWS services.
-* With just one tool
-    * control multiple AWS services
-    * automate them through scripts
-    * manage aws resources programmatically
-    * ...
 
----
-
-### Why use AWS (CLI)
-
-* Easy to install
-    - control AWS resources using AWS API
-    - only python as dependency
-
-* No other complicated setup is required
-    - if you have AWS account and have aws_access_key and aws_secret_key you can run AWS cli against your AWS environment
-    - make sure your AWS user has the right access and IAM policy
+* Agile 2008 Conference in Toronto
+    * Andrew Clay Shafer and Patrick Debois
+    * Google group called “Agile System Administration”
+* October 30-31 2009: DevOpsDays (Ghent)
+    * Conversation continued on Twitter and the #DevOps hashtag was born
 
 ---
 
-### AWS (CLI) Platforms, Components and Dependencies
+#### The rise of DevOps
 
-* AWS (CLI)Supported Platforms
-    - Windows, Linux, macOS, Unix
-* AWS (CLI) Dependencies
-    - Python 2 v2.6.5+ or Python 3 v3.3+
-* AWS (CLI) Components
-    - [aws-cli](https://github.com/aws/aws-cli)
-    - [aws-shell](https://github.com/awslabs/aws-shell)
 
----
-
-### Getting started with AWS (CLI)
-
-* Dependencies
-    * Check Python Version:
-```
-python --version
-```
-    * Check Pip Version :
-```
-pip --version
-```
-    * Check AWS Version :
-```
-aws --version
-```
+* Loose Taxonomies
+    * Culture ( Improvement )
+    * Automation ( Delivery )
+    * Measurement ( Learning )
+    * Sharing ( Collaboration )
+* Continuous
 
 ---
 
-### Getting started with AWS (CLI)
+#### The rise of DevOps
 
-* Install AWS (CLI)
-    * With Python :
-```
-pip install --upgrade --user awscli aws-shell
-```
-    * macOS :
-```
-brew install awscli
-```
-    * Windows: can install [32](https://s3.amazonaws.com/aws-cli/AWSCLI64.msi) bit or [64](https://s3.amazonaws.com/aws-cli/AWSCLI64.msi) bit installer
+
+- DevOps is NOT a department or a framework or a methodology or a tool
+- DevOps does spring from the Agile way of doing things
+- DevOps is not Agile
 
 ---
 
-### Configuring the AWS (CLI)
+#### What is infrastructure as code
 
-* Shell Command Completion
-    * find your shell : _echo $SHELL_ or _echo $0_
-    * find aws_completer : _which aws_completer_
-    * enable command completion :
-        * bash :
-```
-complete -C '/usr/local/bin/aws_completer' aws
-```
-        * zsh :
-```
-source /usr/local/bin/aws_zsh_completer.sh
-```
+
+* Infrastructure as code (IAC) is that you write and execute code to:
+    * define,
+    * deploy,
+    * update infrastructure
+* Key insight of DevOps is that you can manage almost everything in code
 
 ---
 
-### Configuring the AWS (CLI)
+#### What is infrastructure as code
 
-* Configure credentials
+
+* There are four broad categories of IAC tools:
+    * Ad hoc scripts
+    * Configuration management tools
+    * Server templating tools
+    * Orchestration tools
+
+---
+
+#### Ad hoc scripts
+
+
+![](Images/ad_hoc_script.PNG)
+
+---
+
+#### Ad hoc scripts
+
+
+* Ex Bash script called setup-webserver.sh
+
 ```
-aws configure
-AWS Access Key ID[None]:AKIAIOSFDN7EXAMPLE
-AWS Secret Access Key[None]:wJalrXtnFEIENP/xRfiCYEXAMPLEKEY
-Default region name[None]:ap-southeast-1
-Default output format[None]:json
+#!/bin sh
+
+# Update the apt-get cache
+sudo apt-get update
+
+# Install PHP
+sudo apt-get install -y php
+
+# Install Apache
+sudo apt-get install -y apache2
+
+# Copy the code from repository
+sudo git clone https://github.com/test/php-app.git /var/www/html/app
+
+# Start Apache
+sudo service apache2 start
 ```
 
 ---
 
-### Demo:
+#### Configuration management tools
 
-* Install and setup AWS (CLI)
 
-```
-pip install --upgrade --user awscli aws-shell
-
-aws configure
-
-aws ec2 describe-regions
-```
-
-* Note: nice tool to have [jq is sed for JSON](https://robots.thoughtbot.com/jq-is-sed-for-json)
-
----
-
-### AWS (CLI) Syntax
-
-* Syntax :
-```
-aws [options] <command> <subcommand> [parameters]
-```
-* Help : _**aws command help**_
-* Universal Options:
-    * _**--debug**_   Turn on debug logging
-    * _-**-output**_  Output format json, text, table
-    * _**--query**_   JMESPath query to use in filtering
-    * _**--region**_  The region to use
-    * _**...**_
-
----
-
-### Demo:
-
-* AWS (CLI) Synopsis
+* Chef, Puppet, Ansible, and SaltStack are all configuration management tools
 
 ```
-aws s3 ls
+- name: Update the apt-get cache
+  apt:
+    update_cache: yes
 
-aws ec2 describe-regions help
+- name: Install PHP
+  apt:
+    name: php
 
-aws ec2 describe-regions --output table
+- name: Install Apache
+  apt:
+    name: apache2
 
-aws ec2 describe-regions --debug
+- name: Copy the code from repository
+  git: repo=https://github.com/test/php-app.git dest=/var/www/html/app
 
-aws ec2 describe-regions --filters "Name=endpoint,Values=*ap*"
-
-aws ec2 describe-regions --query 'Regions[].{Name:RegionName}'
-
-aws ec2 describe-regions --filters "Name=endpoint,Values=*ap*" \
---query 'Regions[].{Name:RegionName}' --output text
+- name: Start Apache
+  service: name=apache2 state=started enabled=yes
 ```
 
 ---
 
-### Demo:
+#### Configuration management tools
 
-* Create our 1st VPC
 
+![](Images/Configuration_management_tools.PNG)
+
+---
+
+#### Server templating tools
+
+
+* Docker, Packer, and Vagrant
 ```
-aws ec2 create-vpc --cidr-block 172.30.0.0/16
-
-aws ec2 describe-vpcs
-
-aws ec2 modify-vpc-attribute --vpc-id vpc-idxxxx \
---enable-dns-support "{\"Value\":true}"
-
-aws ec2 modify-vpc-attribute --vpc-id vpc-idxxxx \
---enable-dns-hostnames "{\"Value\":true}"
+{
+    "builders": [{
+        "ami_name": "packer-example",
+        "instance_type": "t2.micro",
+        "region": "us-east-1",
+        "type": "amazon-ebs",
+        "source_ami": "ami-40d28157",
+        "ssh_username": "ubuntu"
+    }],
+    "provisioners": [{
+        "type": "shell",
+        "inline": [
+            "sudo apt-get update",
+            "sudo apt-get install -y php",
+            "sudo apt-get install -y apache2",
+            "sudo git clone https://github.com/test/php-app.git /var/www/html/app"
+        ]
+    }]
+}
 ```
 
 ---
 
-### Demo:
+#### Server templating tools
 
-* Associate DHCP to VPC
+
+![](Images/Server_templating_tools.PNG)
+
+---
+
+#### Server templating tools
+
+
+* **Virtual machine (VM)** _emulates an entire computer system_
+    * VMWare,
+    * VirtualBox,
+    * Parallels
+* **Containers** _emulates the user space of an operating system_
+    * Docker
+    * CoreOS ( rkt )
+
+---
+
+#### Orchestration tools
+
+
+* Terraform, CloudFormation OpenStack Heat
 
 ```
-aws ec2 describe-dhcp-options
-
-aws ec2 associate-dhcp-options --dhcp-options-id dopt-idxxxx \
---vpc-id vpc-idxxxx
-
-aws ec2 create-tags --resources vpc-idxxxx dopt-idxxxx \
---tags Key=Name,Value=crash_course Key=Stack,Value=test
+resource "aws_instance" "app" {
+    instance_type = "t2.micro"
+    availability_zone = "us-east-1a"
+    ami = "ami-40d28157"
+    user_data = <<-EOF
+        #!/bin/bash
+        sudo service apache2 start
+        EOF
+}
+resource "aws_db_instance" "db" {
+    allocated_storage = 10
+    engine = "mysql"
+    instance_class = "db.t2.micro"
+    name = "mydb"
+    username = "admin"
+    password = "password"
+}
+resource "aws_elb" "load_balancer" {
+    name = "frontend-load-balancer"
+    instances = ["${aws_instance.app.id}"]
+    availability_zones = ["us-east-1a"]
+    listener {
+        instance_port = 8000
+        instance_protocol = "http"
+        lb_port = 80
+        lb_protocol = "http"
+    }
+}
 ```
 
 ---
 
-### Demo:
+#### Orchestration tools
 
-* Copy/Paste is not an option, try in programmatic way as var
 
-```
-aws ec2 create-vpc --cidr-block 172.30.0.0/16 \
---generate-cli-skeleton output
-
-aws ec2 create-vpc --cidr-block 172.30.0.0/16 \
---generate-cli-skeleton output --query Vpc.VpcId \
---output text
-
-aws ec2 create-vpc --cidr-block 172.30.0.0/16 \
---generate-cli-skeleton output | jq .Vpc.VpcId -r
-```
+![](Images/Orchestration_tools.PNG)
 
 ---
 
-### Demo:
+#### Benefits of infrastructure as code
 
-* Let's try and create VPC and pass VpcId as Shell VAR
 
-```
-aws_vpc_id=$(aws ec2 create-vpc --cidr-block 172.30.0.0/16 \
---query Vpc.VpcId --output text)
-
-echo $aws_vpc_id
-
-aws ec2 modify-vpc-attribute --vpc-id $aws_vpc_id \
---enable-dns-support "{\"Value\":true}"
-
-aws ec2 modify-vpc-attribute --vpc-id $aws_vpc_id \
---enable-dns-hostnames "{\"Value\":true}"
-
-aws ec2 describe-vpcs | jq .
-```
+* Self-service
+* Speed and safety
+* Documentation
+* Version control
+* Validation
+* Reuse
 
 ---
 
-### Demo:
+#### Comparison between (IAC) tools
 
-* Create Subnets
 
-```
-aws ec2 create-subnet --vpc-id  $aws_vpc_id \
---cidr-block 172.30.0.0/24 --availability-zone ap-southeast-1a \
---generate-cli-skeleton output
-
-aws_subn_1=$(aws ec2 create-subnet --vpc-id  $aws_vpc_id \
---cidr-block 172.30.0.0/24 --availability-zone ap-southeast-1a \
---query Subnet.SubnetId --output text)
-
-aws_subn_2=$(aws ec2 create-subnet --vpc-id  $aws_vpc_id \
---cidr-block 172.30.1.0/24 --availability-zone ap-southeast-1b \
- | jq .Subnet.SubnetId -r)
-
-aws ec2 modify-subnet-attribute --subnet-id $aws_subn_1 \
---map-public-ip-on-launch
-
-aws ec2 modify-subnet-attribute --subnet-id $aws_subn_2 \
---map-public-ip-on-launch
-```
+* Configuration management vs orchestration
+* Mutable infrastructure vs immutable infrastructure
+* Procedural language vs declarative language
+* Client/server architecture vs client-only architecture
+* Large community vs small community
+* Mature vs cutting-edge
 
 ---
 
-### Demo:
+#### Configuration management vs orchestration
 
-* Route Table Subnet association
 
-```
-aws_rout_tbl=$(aws ec2 create-route-table --vpc-id $aws_vpc_id \
---query RouteTable.RouteTableId --output text)
-
-aws_rout_ass1=$(aws ec2 associate-route-table --route-table-id \
-$aws_rout_tbl --subnet-id $aws_subn_1 | jq .AssociationId -r)
-
-aws_rout_ass2=$(aws ec2 associate-route-table --route-table-id \
-$aws_rout_tbl --subnet-id $aws_subn_2 | jq .AssociationId -r)
-```
+* configuration management tools
+    * Chef, Puppet, Ansible, SaltStack
+* orchestration tools
+    * CloudFormation, Terraform, OpenStack Heat
+* server templating tools
+    * Docker, Packer, Vigrant
 
 ---
 
-### Demo:
+#### Mutable infrastructure vs immutable infrastructure
 
-* Internet Gateway and internet route
 
-```
-aws_int_gat=$(aws ec2 create-internet-gateway --query \
-InternetGateway.InternetGatewayId --output text)
+* mutable infrastructure paradigm
+    * Chef, Puppet, Ansible, SaltStack
 
-aws ec2 attach-internet-gateway --internet-gateway-id $aws_int_gat \
---vpc-id $aws_vpc_id
-
-aws ec2 create-route --route-table-id $aws_rout_tbl \
---destination-cidr-block 0.0.0.0/0 --gateway-id $aws_int_gat \
-| jq .Return
-```
-
----
-
-### Demo:
-
-* Let's create some securely Groups
-
-```
-aws_sec_cicd=$(aws ec2 create-security-group --group-name cicd \
---description "CICD" --vpc-id $aws_vpc_id --query GroupId \
---output text)
-
-aws_sec_rds=$(aws ec2 create-security-group --group-name rds \
---description "RDS" --vpc-id $aws_vpc_id --query GroupId \
---output text)
-
-aws_sec_redi=$(aws ec2 create-security-group --group-name redis \
---description "REDIS" --vpc-id $aws_vpc_id --query GroupId \
---output text)
-
-aws_sec_app=$(aws ec2 create-security-group --group-name app \
---description "APP" --vpc-id $aws_vpc_id --query GroupId \
---output text)
-
-aws_sec_elb=$(aws ec2 create-security-group --group-name elb \
---description "ELB" --vpc-id $aws_vpc_id --query GroupId \
---output text)
-```
-
----
-
-### Demo:
-
-* Add access permissions to security Groups
-
-```
-ec2 authorize-security-group-ingress --group-id $aws_sec_cicd  \
---protocol tcp --port 22 --cidr 0.0.0.0/0
-```
-
----
-
-### Demo:
-
-* Add Ports to cicd group
-```
-aws ec2 authorize-security-group-ingress --group-id $aws_sec_cicd --ip-permissions \
-'[{"IpProtocol": "tcp", "FromPort": 22, "ToPort": 22, "IpRanges": [{"CidrIp": "132.147.98.173/32"}]},{"IpProtocol": "tcp", "FromPort": 8080, "ToPort": 8080, "IpRanges": [{"CidrIp": "132.147.98.173/32"}]},{"IpProtocol": "-1", "FromPort": 0, "ToPort": 65535, "UserIdGroupPairs": [{"GroupId": "'$aws_sec_app'"}]},{"IpProtocol": "-1", "FromPort": 0, "ToPort": 65535, "UserIdGroupPairs": [{"GroupId": "'$aws_sec_cicd'"}]}]'
-```
-* Add Ports to apps group
-```
-aws ec2 authorize-security-group-ingress --group-id $aws_sec_app --ip-permissions \
-'[{"IpProtocol": "tcp", "FromPort": 22, "ToPort": 22, "UserIdGroupPairs": [{"GroupId": "'$aws_sec_cicd'"}]},{"IpProtocol": "tcp", "FromPort": 80, "ToPort": 80, "UserIdGroupPairs": [{"GroupId": "'$aws_sec_elb'"}]},{"IpProtocol": "-1", "FromPort": 0, "ToPort": 65535, "UserIdGroupPairs": [{"GroupId": "'$aws_sec_app'"}]}]'
-```
-* Add Ports to elb Group
-```
-aws ec2 authorize-security-group-ingress --group-id $aws_sec_elb --ip-permissions \
-'[{"IpProtocol": "tcp", "FromPort": 80, "ToPort": 80, "IpRanges": [{"CidrIp": "0.0.0.0/0"}]},{"IpProtocol": "tcp", "FromPort": 443, "ToPort": 443, "IpRanges": [{"CidrIp": "0.0.0.0/0"}]}]'
-```
-
----
-
-### Demo:
-
-* Add Ports to rds group
-```
-aws ec2 authorize-security-group-ingress --group-id $aws_sec_rds --ip-permissions \
-  '[{"IpProtocol": "tcp", "FromPort": 3306, "ToPort": 3306, "UserIdGroupPairs": [{"GroupId": "'$aws_sec_cicd'"}]},{"IpProtocol": "tcp", "FromPort": 3306, "ToPort": 3306, "UserIdGroupPairs": [{"GroupId": "'$aws_sec_app'"}]},{"IpProtocol": "tcp", "FromPort": 3306, "ToPort": 3306, "IpRanges": [{"CidrIp": "132.147.98.173/32"}]}]'
-```
-* Add Ports to redis group
-```
-aws ec2 authorize-security-group-ingress --group-id $aws_sec_redi --ip-permissions \
-'[{"IpProtocol": "tcp", "FromPort": 6379, "ToPort": 6379, "UserIdGroupPairs": [{"GroupId": "'$aws_sec_cicd'"}]},{"IpProtocol": "tcp", "FromPort": 6379, "ToPort": 6379, "UserIdGroupPairs": [{"GroupId": "'$aws_sec_app'"}]},{"IpProtocol": "tcp", "FromPort": 6379, "ToPort": 6379, "IpRanges": [{"CidrIp": "132.147.98.173/32"}]}]'
-```
-
----
-
-### Demo:
-
-* Assigning tags to AWS resources
-
-```
-aws ec2 create-tags --resources $aws_vpc_id $aws_dhcp_id \
-$aws_subn_1 $aws_subn_2 $aws_rout_tbl $aws_int_gat $aws_sec_cicd \
-$aws_sec_app $aws_sec_elb $aws_sec_rds $aws_sec_redi --tags \
-Key=Name,Value=crash_cours
-```
-
----
-
-### Let's try to script it
-
-* Gather env var from our aws account
-
-```
-set | grep aws_
-
-cat aws_env.sh
-
-. ./aws_env.sh
-```
-
----
-
-### Build complete infrastructure building script
-
-* Let's make a builder script
-
-```
-less create_env.sh
-
-./aws_create_env.sh
-```
+* immutable infrastructure paradigm
+    * CloudFormation, Terraform, OpenStack Heat, Docker, Packer, Vigrant
 
 
 ---
 
-### Delete complete infrastructure building script
+#### Procedural language vs declarative language
 
-* Delete created infrastructure
+
+* procedural style (write code that specifies, step-by-step, how to to achieve some desired end state)
+    * Chef, Ansible
+* declarative style (write code that specifies your desired end state)
+    * Terraform, CloudFormation, SaltStack, Puppet, Open Stack Heat
+
+---
+
+#### Procedural language vs declarative language Ex.
+
+
+* Ansible
 
 ```
-less aws_del_env.sh
+- ec2:
+    count: 10
+    image: ami-40d28157
+    instance_type: t2.micro
+```
+* Terraform
 
-./aws_del_env.sh
+```
+resource "aws_instance" "example" {
+    count = 10
+    ami = "ami-40d28157"
+    instance_type = "t2.micro"
+}
 ```
 
 ---
 
-### Resources
+#### Procedural language vs declarative language Ex.
 
-* Presentation available online at [awscli.mudrii.com]()
-* Sources of this presentation is available at
-  [https://github.com/mudrii/awscli.git](https://github.com/mudrii/awscli.git)
-* More details on AWS CLI [Official PDF](http://docs.aws.amazon.com/cli/latest/userguide/aws-cli.pdf)
-* AWS (CLI) reference [AWS Command Line Reference](http://docs.aws.amazon.com/cli/latest/reference/#available-services)
+
+* Ansible
+
+```
+- ec2:
+    count: 5
+    image: ami-40d28157
+    instance_type: t2.micro
+```
+* Terraform
+
+```
+resource "aws_instance" "example" {
+    count = 15
+    ami = "ami-40d28157"
+    instance_type = "t2.micro"
+}
+```
 
 ---
 
-# Questions ?
+#### Procedural language vs declarative language
+
+
+* Procedural code does NOT fully capture the state of the infrastructure.
+    * With procedural codebase, you have to know the full history of every change that has ever happened.
+* Procedural code limits reusability
+    * The reusability of procedural code is inherently limited because you have to manually take into account the current state of the codebase.
+
+
+---
+
+### Client/server architecture vs client-only architecture
+
+
+* client/server architecture
+    * Chef, Puppet, SaltStack, CloudFormation, and Heat
+* client-only architecture
+    * Ansible, and Terraform
+
+---
+
+### A comparison of IAC tools
+
+![](Images/Compare_IAC.PNG)
+
+---
+
+#### An Introduction to Terraform
+
+
+* Original author Mitchell Hashimoto
+* 1st Time released in July 28, 2014
+* Latest release 0.9.5 in May 11, 2017
+* Operating system supported;
+	* Linux, FreeBSD, macOS, OpenBSD, Solaris, and Microsoft Windows
+* Website [www.terraform.io](www.terraform.io)
+
+---
+
+#### How Terraform works
+
+
+* written in the Go programming language
+* one single binary
+* terraform binary make API calls to one or more providers:
+    * Amazon Web Services (AWS)
+    * Azure
+    * Google Cloud
+    * DigitalOcean
+    * etc.
+* terraform templates
+
+---
+
+#### How Terraform works
+
+
+![](Images/terraform.PNG)
+
+---
+
+#### An Introduction to Docker Image
+
+
+* image
+    * An image is a lightweight, stand-alone, executable package that includes everything needed to run a piece of software, including the code, a runtime, libraries, environment variables, and config files.
+
+---
+
+#### An Introduction to Docker Container
+
+
+* container
+    * A container is a runtime instance of an image – what the image becomes in memory when actually executed. It runs completely isolated from the host environment by default, only accessing host files and ports if configured to do so.
+
+---
+
+#### An Introduction to Docker Dockerfile
+
+
+* Docker components
+    * image
+        * An image is a lightweight, stand-alone, executable package that includes everything needed to run a piece of software, including the code, a runtime, libraries, environment variables, and config files.
+    * container
+        * A container is a runtime instance of an image – what the image becomes in memory when actually executed. It runs completely isolated from the host environment by default, only accessing host files and ports if configured to do so.
+    * Dockerfile
+        * Dockerfile will define what goes on in the environment inside your container.
+
+---
+
+#### Dockerfile
+
+
+```
+# Use an official Python runtime as a base image
+FROM python:2.7-slim
+
+# Set the working directory to /app
+WORKDIR /app
+
+# Copy the current directory contents into the container at /app
+ADD . /app
+
+# Install any needed packages specified in requirements.txt
+RUN pip install -r requirements.txt
+
+# Make port 80 available to the world outside this container
+EXPOSE 80
+
+# Define environment variable
+ENV NAME World
+
+# Run app.py when the container launches
+CMD ["python", "app.py"]
+```
+
+
+---
+
+### Docker vs VM
+
+
+![](Images/VM.PNG)
+
+
+---
+
+### Docker vs VM
+
+
+![](Images/Docker.PNG)
+
+
+---
+
+# Demo & Questions ?
 
 ---
